@@ -1,0 +1,565 @@
+/* ================================
+   GLOBAL
+================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e8f1ff,
+            #f8fbff
+        );
+
+    min-height: 100vh;
+
+    color: #1f2937;
+}
+
+
+/* ================================
+   PAGE WRAPPER
+================================ */
+
+.page-wrapper {
+
+    width: 100%;
+    max-width: 900px;
+
+    margin: auto;
+
+    padding: 40px 20px;
+}
+
+
+/* ================================
+   HEADER
+================================ */
+
+.brts-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0756c9,
+            #0d8bf2
+        );
+
+    color: white;
+
+    padding: 28px 30px;
+
+    border-radius: 20px 20px 0 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(0, 80, 180, 0.20);
+}
+
+
+.bus-icon {
+
+    font-size: 48px;
+
+    background:
+        rgba(255,255,255,0.15);
+
+    width: 75px;
+    height: 75px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+}
+
+
+.brts-header h1 {
+
+    font-size: 30px;
+
+    margin-bottom: 5px;
+
+}
+
+
+.brts-header p {
+
+    font-size: 15px;
+
+    opacity: 0.9;
+
+}
+
+
+/* ================================
+   MAIN CARD
+================================ */
+
+.route-card {
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius:
+        0 0 20px 20px;
+
+    box-shadow:
+        0 10px 35px
+        rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* ================================
+   SECTION TITLE
+================================ */
+
+.section-title {
+
+    margin-bottom: 30px;
+
+}
+
+
+.section-title h2 {
+
+    font-size: 24px;
+
+    color: #174ea6;
+
+    margin-bottom: 7px;
+
+}
+
+
+.section-title p {
+
+    color: #6b7280;
+
+    font-size: 14px;
+
+}
+
+
+/* ================================
+   STATION INPUT
+================================ */
+
+.station-group {
+
+    margin-bottom: 22px;
+
+}
+
+
+.station-group label {
+
+    display: block;
+
+    font-weight: 600;
+
+    margin-bottom: 9px;
+
+    color: #374151;
+
+}
+
+
+select {
+
+    width: 100%;
+
+    padding: 14px 16px;
+
+    border: 2px solid #dbe3ef;
+
+    border-radius: 10px;
+
+    background: #f9fbff;
+
+    color: #374151;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    outline: none;
+
+    transition:
+        0.25s ease;
+
+}
+
+
+select:hover {
+
+    border-color: #8db9f5;
+
+}
+
+
+select:focus {
+
+    border-color: #0d6efd;
+
+    background: white;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(13, 110, 253, 0.10);
+
+}
+
+
+/* ================================
+   CALCULATE BUTTON
+================================ */
+
+#calculateBtn {
+
+    width: 100%;
+
+    padding: 15px;
+
+    margin-top: 8px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0756c9,
+            #0d8bf2
+        );
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+#calculateBtn:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(13, 110, 253, 0.25);
+
+}
+
+
+#calculateBtn:active {
+
+    transform:
+        translateY(0);
+
+}
+
+
+/* ================================
+   RESULT
+================================ */
+
+.trip-result {
+
+    margin-top: 30px;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    background: #f5f9ff;
+
+    border: 1px solid #dceaff;
+
+}
+
+
+.trip-result h2 {
+
+    color: #174ea6;
+
+    font-size: 21px;
+
+    margin-bottom: 20px;
+
+}
+
+
+/* ================================
+   RESULT BOXES
+================================ */
+
+.result-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 15px;
+
+}
+
+
+.result-box {
+
+    background: white;
+
+    padding: 18px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    border: 1px solid #e1e8f2;
+
+}
+
+
+.result-box > span {
+
+    font-size: 28px;
+
+}
+
+
+.result-box small {
+
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+    margin-bottom: 4px;
+
+}
+
+
+.result-box strong {
+
+    display: block;
+
+    color: #174ea6;
+
+    font-size: 20px;
+
+}
+
+
+/* ================================
+   ROUTE PATH
+================================ */
+
+.route-section {
+
+    margin-top: 25px;
+
+}
+
+
+.route-section h3 {
+
+    font-size: 18px;
+
+    color: #374151;
+
+    margin-bottom: 15px;
+
+}
+
+
+#routePath {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 10px;
+
+    border: 1px solid #e1e8f2;
+
+}
+
+
+.route-station {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 10px;
+
+    font-weight: 600;
+
+    color: #374151;
+
+}
+
+
+.station-number {
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #0d6efd;
+
+    color: white;
+
+    font-size: 13px;
+
+}
+
+
+/* ================================
+   STATUS
+================================ */
+
+.status {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+}
+
+
+/* ================================
+   FOOTER
+================================ */
+
+footer {
+
+    text-align: center;
+
+    padding: 25px 10px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+}
+
+
+footer p {
+
+    font-weight: 600;
+
+    margin-bottom: 5px;
+
+}
+
+
+/* ================================
+   HIDDEN
+================================ */
+
+.d-none {
+
+    display: none;
+
+}
+
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 600px) {
+
+    .page-wrapper {
+
+        padding: 20px 12px;
+
+    }
+
+
+    .brts-header {
+
+        padding: 22px;
+
+        gap: 14px;
+
+    }
+
+
+    .bus-icon {
+
+        width: 55px;
+        height: 55px;
+
+        font-size: 32px;
+
+    }
+
+
+    .brts-header h1 {
+
+        font-size: 22px;
+
+    }
+
+
+    .route-card {
+
+        padding: 22px;
+
+    }
+
+
+    .result-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}

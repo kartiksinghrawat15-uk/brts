@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>BRTS Route Navigation Engine</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- HEADER -->
+        <header class="brts-header">
+
+            <div class="bus-icon">🚍</div>
+
+            <div>
+                <h1>BRTS Transit Portal</h1>
+                <p>Route, Distance & Time Calculator</p>
+            </div>
+
+        </header>
+
+
+        <!-- MAIN CARD -->
+        <main class="route-card">
+
+            <div class="section-title">
+                <h2>🗺️ Plan Your Journey</h2>
+                <p>Select your starting point and destination</p>
+            </div>
+
+
+            <form id="routeForm">
+
+                <!-- SOURCE -->
+                <div class="station-group">
+
+                    <label for="sourceStation">
+                        📍 Starting Station
+                    </label>
+
+                    <select id="sourceStation">
+
+                        <option value="" disabled selected>
+                            Select Source Station...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DESTINATION -->
+                <div class="station-group">
+
+                    <label for="destStation">
+                        🏁 Destination Station
+                    </label>
+
+                    <select id="destStation">
+
+                        <option value="" disabled selected>
+                            Select Destination...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BUTTON -->
+                <button
+                    id="calculateBtn"
+                    type="submit">
+
+                    🚍 Calculate Route
+
+                </button>
+
+            </form>
+
+
+            <!-- RESULT -->
+            <div id="tripResult" class="trip-result d-none">
+
+                <h2>📍 Trip Summary</h2>
+
+
+                <div class="result-grid">
+
+                    <div class="result-box">
+
+                        <span>📏</span>
+
+                        <div>
+                            <small>Total Distance</small>
+
+                            <strong id="resDistance">
+                                0 km
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-box">
+
+                        <span>⏱️</span>
+
+                        <div>
+                            <small>Estimated Time</small>
+
+                            <strong id="resTime">
+                                0 mins
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROUTE PATH -->
+                <div class="route-section">
+
+                    <h3>🚌 Route Path</h3>
+
+                    <div id="routePath"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <p id="status" class="status">
+                Loading stations...
+            </p>
+
+        </main>
+
+
+        <!-- FOOTER -->
+        <footer>
+
+            <p>
+                🚍 BRTS Route Navigation Engine
+            </p>
+            <h5>
+                With Other State Connectivity 
+            </h5>
+
+            <span>
+                Powered by C++ • Node.js • HTML • CSS
+            </span>
+
+        </footer>
+
+    </div>
+
+
+    <script src="jquery.min.js"></script>
+
+
+    <script>
+
+        async function loadDynamicStations() {
+
+            console.log("Loading stations...");
+
+            try {
+
+                const response =
+                    await fetch('/api/stations');
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Server returned " +
+                        response.status
+                    );
+
+                }
+
+                const data =
+                    await response.json();
+
+                let stations;
+
+                if (Array.isArray(data)) {
+
+                    stations = data;
+
+                }
+
+                else if (data.station) {
+
+                    stations = data.station;
+
+                }
+
+                else {
+
+                    throw new Error(
+                        "Station data format is incorrect"
+                    );
+
+                }
+
+
+                const source =
+                    document.getElementById(
+                        "sourceStation"
+                    );
+
+                const destination =
+                    document.getElementById(
+                        "destStation"
+                    );
+
+
+                source.innerHTML =
+                    `<option value="" disabled selected>
+                        Select Source Station...
+                     </option>`;
+
+
+                destination.innerHTML =
+                    `<option value="" disabled selected>
+                        Select Destination Station...
+                     </option>`;
+
+
+                stations.forEach(station => {
+
+                    if (!station) return;
+
+                    station = station.trim();
+
+                    if (station === "") return;
+
+
+                    const sourceOption =
+                        document.createElement("option");
+
+                    sourceOption.value = station;
+
+                    sourceOption.textContent =
+                        station.replace(/_/g, " ");
+
+                    source.appendChild(sourceOption);
+
+
+                    const destinationOption =
+                        document.createElement("option");
+
+                    destinationOption.value = station;
+
+                    destinationOption.textContent =
+                        station.replace(/_/g, " ");
+
+                    destination.appendChild(
+                        destinationOption
+                    );
+
+                });
+
+
+                document.getElementById(
+                    "status"
+                ).textContent =
+                    "✅ Stations loaded successfully";
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "ERROR LOADING STATIONS:",
+                    error
+                );
+
+                document.getElementById(
+                    "status"
+                ).textContent =
+                    "❌ Failed to load stations";
+
+            }
+
+        }
+
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            loadDynamicStations
+        );
+
+
+        // CALCULATE ROUTE
+
+        document
+            .getElementById("routeForm")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const source =
+                        document.getElementById(
+                            "sourceStation"
+                        ).value;
+
+
+                    const destination =
+                        document.getElementById(
+                            "destStation"
+                        ).value;
+
+
+                    if (!source || !destination) {
+
+                        alert(
+                            "Please select both source and destination"
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (source === destination) {
+
+                        alert(
+                            "Source and destination cannot be same"
+                        );
+
+                        return;
+
+                    }
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                `/api/route?source=${encodeURIComponent(source)}&destination=${encodeURIComponent(destination)}`
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        console.log(
+                            "ROUTE RESULT:",
+                            data
+                        );
+
+
+                        if (!response.ok) {
+
+                            alert(
+                                data.error ||
+                                "Route not found"
+                            );
+
+                            return;
+
+                        }
+
+
+                        // DISTANCE
+
+                        document.getElementById(
+                            "resDistance"
+                        ).textContent =
+                            data.distance + " km";
+
+
+                        // TIME
+
+                        document.getElementById(
+                            "resTime"
+                        ).textContent =
+                            data.time + " mins";
+
+
+                        // ROUTE PATH
+
+                        const routePath =
+                            document.getElementById(
+                                "routePath"
+                            );
+
+
+                        routePath.innerHTML = "";
+
+
+                        data.route.forEach(
+                            (station, index) => {
+
+                                const div =
+                                    document.createElement(
+                                        "div"
+                                    );
+
+
+                                div.className =
+                                    "route-station";
+
+
+                                div.innerHTML = `
+                                    <span class="station-number">
+                                        ${index + 1}
+                                    </span>
+
+                                    <span>
+                                        ${station.replace(/_/g, " ")}
+                                    </span>
+                                `;
+
+
+                                routePath.appendChild(
+                                    div
+                                );
+
+                            }
+                        );
+
+
+                        // SHOW RESULT
+
+                        document
+                            .getElementById(
+                                "tripResult"
+                            )
+                            .classList.remove(
+                                "d-none"
+                            );
+
+                    }
+
+
+                    catch (error) {
+
+                        console.error(
+                            "Route calculation error:",
+                            error
+                        );
+
+                        alert(
+                            "Could not calculate route"
+                        );
+
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>

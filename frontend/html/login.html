@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRTS Portal - Login</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            color: #1e3c72;
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: #2a5298;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #2a5298;
+        }
+
+        .toggle-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .toggle-text a {
+            color: #1e3c72;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .toggle-text a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <!-- LOGIN FORM -->
+        <div id="login-section">
+            <h2>BRTS Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="Enter password">
+                </div>
+                <button type="submit">Sign In</button>
+            </form>
+            <div class="toggle-text">
+                New user? <a href="#" onclick="toggleAuth(true)">Create an account</a>
+            </div>
+        </div>
+
+        <!-- REGISTRATION FORM -->
+        <div id="register-section" class="hidden">
+            <h2>Create BRTS Account</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">Username</label>
+                    <input type="text" id="register-username" required placeholder="Choose a username">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required placeholder="Create a password">
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <div class="toggle-text">
+                Already have an account? <a href="#" onclick="toggleAuth(false)">Sign in here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle view between Login and Registration panels
+        function toggleAuth(showRegister) {
+            document.getElementById('login-section').classList.toggle('hidden', showRegister);
+            document.getElementById('register-section').classList.toggle('hidden', !showRegister);
+        }
+
+        // Shared background handler to securely post forms to Express API routes
+        async function sendAuthData(url, username, password) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                    if (url.includes('login')) {
+                        // Relocate user securely to main dashboard application view
+                        window.location.href = '/dashboard'; 
+                    } else {
+                        // Switch over to verification login view after success registry 
+                        toggleAuth(false);
+                    }
+                } else {
+                    alert(data.error || "An error occurred");
+                }
+            } catch (err) {
+                console.error("Connection Error:", err);
+                alert("Failed to communicate with authentication system server.");
+            }
+        }
+
+        // Intercept Login Submit Action
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('login-username').value;
+            const pass = document.getElementById('login-password').value;
+            sendAuthData('/api/login', user, pass);
+        });
+
+        // Intercept Registration Submit Action
+        document.getElementById('register-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('register-username').value;
+            const pass = document.getElementById('register-password').value;
+            sendAuthData('/api/register', user, pass);
+        });
+    </script>
+</body>
+</html>
